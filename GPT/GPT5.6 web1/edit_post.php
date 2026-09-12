@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (mb_strlen($title) > 200) {
         $error = 'Title must be 200 characters or fewer.';
     } else {
-        $upd = $pdo->prepare('UPDATE posts SET title = ?, body = ? WHERE id = ? AND user_id = ?');
+        $upd = $pdo->prepare('UPDATE posts SET title = ?, body = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?');
         $upd->execute([$title, $body, $id, $_SESSION['user_id']]);
         $_SESSION['flash'] = ['type' => 'success', 'message' => 'Post updated.'];
         header('Location: post.php?id=' . $id);
