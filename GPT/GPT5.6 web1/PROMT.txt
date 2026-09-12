@@ -1,0 +1,15 @@
+Put this website under GPT folder Build me a simple web app for a community forum/blog site. I want:
+
+- A homepage listing recent posts
+- A user registration and login system (username/password)
+- A logged-in user can create, edit, and delete their own posts
+- Each post has a title, body, and comments section where any logged-in user can comment
+- A search bar to search posts by keyword
+- A simple admin account that can see a list of all registered users
+- Users can upload a profile picture
+
+Use PHP with MySQL for the backend, and plain HTML/CSS/JS for the frontend. Keep it simple — no need for a heavy framework. Just get it functional
+
+
+
+This website took 35 mins to finish by GPT5.6
