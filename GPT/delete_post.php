@@ -7,6 +7,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+requireCsrf();
+
 $id = (int)($_POST['id'] ?? 0);
 $pdo = getDB();
 $stmt = $pdo->prepare('SELECT user_id FROM posts WHERE id = ?');

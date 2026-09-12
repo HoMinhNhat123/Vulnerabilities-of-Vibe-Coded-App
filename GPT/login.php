@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$username]);
         $user = $stmt->fetch();
         if ($user && password_verify($password, $user['password'])) {
+            session_regenerate_id(true);
             $_SESSION['user_id'] = (int)$user['id'];
             $_SESSION['flash'] = ['type' => 'success', 'message' => 'You are logged in.'];
             header('Location: index.php');

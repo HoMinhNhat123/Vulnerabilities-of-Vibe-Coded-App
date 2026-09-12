@@ -71,6 +71,7 @@ require_once __DIR__ . '/includes/header.php';
         <div class="btn-row" style="margin-top:1.25rem">
             <a class="btn btn-ghost" href="edit_post.php?id=<?php echo (int)$post['id']; ?>">Edit</a>
             <form method="post" action="delete_post.php" data-confirm="Delete this post permanently?">
+                <?php echo csrfField(); ?>
                 <input type="hidden" name="id" value="<?php echo (int)$post['id']; ?>">
                 <button type="submit" class="btn btn-danger">Delete</button>
             </form>

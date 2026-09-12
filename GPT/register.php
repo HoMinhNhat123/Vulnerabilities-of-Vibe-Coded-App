@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $ins = $pdo->prepare('INSERT INTO users (username, password) VALUES (?, ?)');
             $ins->execute([$username, $hash]);
+            session_regenerate_id(true);
             $_SESSION['user_id'] = (int)$pdo->lastInsertId();
             $_SESSION['flash'] = ['type' => 'success', 'message' => 'Welcome! Your account was created.'];
             header('Location: index.php');
