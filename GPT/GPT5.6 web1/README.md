@@ -1,6 +1,6 @@
 # Community Forum
 
-A simple PHP + MySQL community forum / blog under the `GPT` folder.
+A simple PHP + MySQL community forum / blog. Lives under `GPT/GPT5.6 web1/`.
 
 ## Features
 
@@ -13,12 +13,28 @@ A simple PHP + MySQL community forum / blog under the `GPT` folder.
 
 ## Requirements
 
-- PHP 8+ with PDO MySQL extension
-- MySQL or MariaDB
+- PHP 8+ with **either** `pdo_mysql` **or** `pdo_sqlite`
+- MySQL/MariaDB (optional — SQLite is used automatically if MySQL is unavailable)
+
+### Fixing “could not find driver”
+
+That error means PHP has no MySQL PDO extension. Install one of:
+
+```bash
+# Ubuntu / Debian
+sudo apt install php-mysql
+# or SQLite-only
+sudo apt install php-sqlite3
+
+# macOS (Homebrew PHP)
+brew install php
+```
+
+Then restart the PHP server. This app will also fall back to SQLite automatically when `pdo_mysql` is missing but `pdo_sqlite` is present.
 
 ## Setup
 
-1. Create the database and user (or adjust `config/database.php`):
+1. (Optional) For MySQL, create the database and user, or edit `config/database.php`:
 
 ```sql
 CREATE DATABASE community_forum CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -27,9 +43,10 @@ GRANT ALL PRIVILEGES ON community_forum.* TO 'forum_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-2. From the `GPT` directory, start PHP’s built-in server:
+2. From this directory, start PHP’s built-in server:
 
 ```bash
+cd "GPT/GPT5.6 web1"
 php -S localhost:8080
 ```
 
@@ -45,8 +62,9 @@ php -S localhost:8080
 ## Project layout
 
 ```
-GPT/
-  config/database.php   # DB credentials
+GPT/GPT5.6 web1/
+  config/database.php   # DB credentials (+ SQLite fallback)
+  data/                 # SQLite file (created when needed)
   includes/             # Shared auth, header, footer
   css/style.css
   js/main.js

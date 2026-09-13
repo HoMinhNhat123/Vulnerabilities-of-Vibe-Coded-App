@@ -1,7 +1,7 @@
 <?php
 /**
  * One-time setup: creates tables and default admin account.
- * Run once after configuring MySQL, then delete or protect this file.
+ * Works with MySQL or the SQLite fallback from config/database.php.
  */
 require_once __DIR__ . '/config/database.php';
 
@@ -10,41 +10,76 @@ $error = null;
 
 try {
     $pdo = getDB();
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    $messages[] = 'Connected using driver: ' . $driver . '.';
 
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(50) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL,
-            is_admin TINYINT(1) NOT NULL DEFAULT 0,
-            profile_picture VARCHAR(255) DEFAULT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ");
-
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS posts (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            title VARCHAR(200) NOT NULL,
-            body TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )
-    ");
-
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS comments (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            post_id INT NOT NULL,
-            user_id INT NOT NULL,
-            body TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )
-    ");
+    if ($driver === 'sqlite') {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL,
+                is_admin INTEGER NOT NULL DEFAULT 0,
+                profile_picture TEXT DEFAULT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                body TEXT NOT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ");
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS comments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                body TEXT NOT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ");
+    } else {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(50) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL,
+                is_admin TINYINT(1) NOT NULL DEFAULT 0,
+                profile_picture VARCHAR(255) DEFAULT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS posts (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                title VARCHAR(200) NOT NULL,
+                body TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ");
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS comments (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                post_id INT NOT NULL,
+                user_id INT NOT NULL,
+                body TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ");
+    }
 
     $messages[] = 'Tables created successfully.';
 
